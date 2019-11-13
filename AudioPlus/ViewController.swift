@@ -95,16 +95,32 @@ class ViewController: UIViewController {
       
       // MARK: Recording
       func setupRecorder() {
+        let fileURL = getURLforMemo()
+        let recordSettings = [
+            AVFormatIDKey : kAudioFormatLinearPCM,
+            AVSampleRateKey: 44100.0,
+            AVNumberOfChannelsKey: 1,
+            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+        ]  as [String : Any]
         
+        do {
+            audioRecorder = try AVAudioRecorder(url: fileURL, settings: recordSettings)
+            audioRecorder.delegate = self
+            audioRecorder.prepareToRecord()
+        } catch let error {
+            print("Error Occurred with initializing Recorder: \(error.localizedDescription)")
+        }
       }
       
       func record() {
         audioStatus = .Recording
+        audioRecorder.record()
       }
       
       func stopRecording() {
         recordButton.setBackgroundImage(UIImage(named: "button-record"), for: UIControl.State.normal)
         audioStatus = .Stopped
+        audioRecorder.stop()
       }
       
       // MARK: Playback
